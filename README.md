@@ -1,2 +1,3 @@
-# ai-pazar-analizi
-AI Pazar Analiz Agentim
+streamlit
+pandas
+openai
