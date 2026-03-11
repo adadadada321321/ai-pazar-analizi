@@ -1,0 +1,37 @@
+name: 🤖 Agent Otomatik Görev
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Her Pazartesi 09:00 UTC
+  workflow_dispatch:  # Manuel tetikleme
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Python Kur
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Bağımlılıkları Kur
+        run: |
+          pip install -r requirements.txt
+          
+      - name: Agent'ı Çalıştır
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          TOPIC: "Elektrikli Araba"
+          COUNTRY: "TR"
+        run: |
+          python run_agent.py  # Ayrı bir script ile headless çalıştır
+          
+      - name: Sonuçları Commit Et
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/
+          git commit -m "🤖 Otomatik analiz: $(date)" || echo "Değişiklik yok"
+          git push
